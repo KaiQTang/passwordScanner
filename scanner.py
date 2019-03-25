@@ -2,7 +2,7 @@ import os
 import subprocess
 
 types = ['txt','log']
-keyworkds = ['password','token']
+keywords = ['password','token']
 result = {}
 
 def main():
@@ -32,7 +32,7 @@ def addFiles(type):
     return result
 
 def openAndScan(file, patterns):
-    if(file != './patterns.txt'):
+    if(file != './patterns.txt' and file != ''):
         with open(file) as fp:
             line = fp.readline()
             count = 1
@@ -42,7 +42,7 @@ def openAndScan(file, patterns):
                 count += 1
 
 def findAndSendToResult(line, count, patterns, file):
-    for keyword in keyworkds:
+    for keyword in keywords:
         index = line.find(keyword)
         if (index != -1):
             matchFlag = False
