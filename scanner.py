@@ -61,10 +61,7 @@ def loadPatterns():
     return patterns
 
 def addToResult(file, line, index, count):
-    if (len(line) >= index + 70):
-        res = (str(count) + " : " + line[index:index + 70])
-    else:
-        res = (str(count) + " : " + line[index:])
+    res = (str(count) + " : " + line[index:])
     if (result.get(file) == None):
         result[file] = []
         result[file].append(res)
