@@ -2,7 +2,7 @@ import os
 import subprocess
 
 types = ['txt','log']
-keywords = ['password','token']
+keywords = ['password','passwd']
 result = {}
 
 def main():
