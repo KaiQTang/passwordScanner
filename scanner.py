@@ -11,7 +11,6 @@ def main():
         files.extend(addFiles(type))
         addFiles(type)
 
-    print("scan through following files: " + str(files))
     patterns = loadPatterns()
     for file in files:
         openAndScan(file, patterns)
