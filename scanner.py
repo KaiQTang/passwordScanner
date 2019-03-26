@@ -1,14 +1,14 @@
 import os
 import subprocess
 import platform
-import glob
 import fnmatch
 
-types = ['txt','log']
+types = ['log']
 keywords = ['password','passwd']
 result = {}
 
 def main():
+    print("----------------------STARTING------------------------------")
     files = []
     print("Gathering files with extensions: " + str(types))
     for type in types:
@@ -16,10 +16,13 @@ def main():
 
     print("Loading patterns from patterns.txt")
     patterns = loadPatterns()
-    print("Scanning......")
+    print("Scanning for keywords: "+str(keywords))
     for file in files:
+        print("Scanning on: " + file)
         openAndScan(file, patterns)
 
+
+    print("----------------------RESULT------------------------------")
     if (result == {}):
         print("No sensitive information found for keywords " + str(keywords))
     else:
@@ -29,10 +32,10 @@ def main():
                 print(finding)
 
 def addFiles(type):
-    #return glob.glob('**/*.'+type, recursive=True)
     matches = []
     for root, dirnames, filenames in os.walk('.'):
-        for filename in fnmatch.filter(filenames, '*.log'):
+        for filename in fnmatch.filter(filenames, '*.'+type):
+            print("Adding file :" + filename)
             matches.append(os.path.join(root, filename))
     return matches
 
