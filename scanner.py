@@ -2,6 +2,7 @@ import os
 import subprocess
 import platform
 import glob
+import fnmatch
 
 types = ['txt','log']
 keywords = ['password','passwd']
@@ -28,7 +29,12 @@ def main():
                 print(finding)
 
 def addFiles(type):
-    return glob.glob('**/*.'+type, recursive=True)
+    #return glob.glob('**/*.'+type, recursive=True)
+    matches = []
+    for root, dirnames, filenames in os.walk('.'):
+        for filename in fnmatch.filter(filenames, '*.log'):
+            matches.append(os.path.join(root, filename))
+    return matches
 
 
 
