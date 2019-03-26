@@ -1,5 +1,7 @@
 import os
 import subprocess
+import platform
+import glob
 
 types = ['txt','log']
 keywords = ['password','passwd']
@@ -7,16 +9,18 @@ result = {}
 
 def main():
     files = []
+    print("Gathering files with extensions: " + str(types))
     for type in types:
         files.extend(addFiles(type))
-        addFiles(type)
 
+    print("Loading patterns from patterns.txt")
     patterns = loadPatterns()
+    print("Scanning......")
     for file in files:
         openAndScan(file, patterns)
 
     if (result == {}):
-        print("nothing is found, good job! =.=")
+        print("No sensitive information found for keywords " + str(keywords))
     else:
         for file,findings in result.items():
             print(file + ": " +str(len(findings)))
@@ -24,21 +28,18 @@ def main():
                 print(finding)
 
 def addFiles(type):
-    all = "bash -c \"find . -name \'*." + type + "\'\""
-    result = subprocess.check_output(all)
-    result = result.strip()
-    result = result.split('\n')
-    return result
+    return glob.glob('**/*.'+type, recursive=True)
+
+
 
 def openAndScan(file, patterns):
-    if(file != './patterns.txt' and file != ''):
-        with open(file) as fp:
+    with open(file) as fp:
+        line = fp.readline()
+        count = 1
+        while line:
+            findAndSendToResult(line, count, patterns, file)
             line = fp.readline()
-            count = 1
-            while line:
-                findAndSendToResult(line, count, patterns, file)
-                line = fp.readline()
-                count += 1
+            count += 1
 
 def findAndSendToResult(line, count, patterns, file):
     for keyword in keywords:
