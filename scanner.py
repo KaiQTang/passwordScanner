@@ -2,6 +2,7 @@ import os
 import subprocess
 import platform
 import fnmatch
+import sys
 
 types = ['log']
 keywords = ['password','passwd']
@@ -18,22 +19,30 @@ def main():
     patterns = loadPatterns()
     print("Scanning for keywords: "+str(keywords))
     for file in files:
-        print("Scanning on: " + file)
-        openAndScan(file, patterns)
-
+        try:
+            print("Scanning on: " + file)
+            openAndScan(file, patterns)
+        except:
+            print("Cannot scan on file: " + file)
+            pass
 
     print("----------------------RESULT------------------------------")
+    count = 0
     if (result == {}):
         print("No sensitive information found for keywords " + str(keywords))
     else:
         for file,findings in result.items():
             print(file + ": " +str(len(findings)))
             for finding in findings:
+                count = count + 1
                 print(finding)
+    print("------------Total number of findings: "+str(count)+"------------------")
+    sys.exit(count)
 
 def addFiles(type):
     matches = []
-    for root, dirnames, filenames in os.walk('.'):
+    for root, dirnames, filenames in os.walk(u'.'):
+        print(root,dirnames,filenames)
         for filename in fnmatch.filter(filenames, '*.'+type):
             print("Adding file :" + filename)
             matches.append(os.path.join(root, filename))
