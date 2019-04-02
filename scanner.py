@@ -1,22 +1,37 @@
 import os
-import subprocess
-import platform
 import fnmatch
 import sys
+import glob
+import argparse as ap
 
-types = ['log']
+types = ['log','txt']
 keywords = ['password','passwd']
 result = {}
 
 def main():
     print("----------------------STARTING------------------------------")
+    print("Loading patterns from patterns.txt")
+    patterns = loadPatterns()
+
     files = []
+    parser = ap.ArgumentParser(description="Password Scanner")
+    parser.add_argument("--path")
+    args, leftovers = parser.parse_known_args()
+
+    if args.path is None:
+        print ("Path is not set, using current dir as root dir")
+    else:
+        try:
+            print ("Change to path : " + str(args.path))
+            os.chdir(args.path)
+        except:
+            print("Unable to change path, check input.")
+            exit()
+
     print("Gathering files with extensions: " + str(types))
     for type in types:
         files.extend(addFiles(type))
 
-    print("Loading patterns from patterns.txt")
-    patterns = loadPatterns()
     print("Scanning for keywords: "+str(keywords))
     for file in files:
         try:
@@ -41,11 +56,14 @@ def main():
 
 def addFiles(type):
     matches = []
-    for root, dirnames, filenames in os.walk(u'.'):
-        print(root,dirnames,filenames)
-        for filename in fnmatch.filter(filenames, '*.'+type):
-            print("Adding file :" + filename)
-            matches.append(os.path.join(root, filename))
+    if (sys.version_info[0] == 2):
+        for root, dirnames, filenames in os.walk(u'.'):
+            print(root,dirnames,filenames)
+            for filename in fnmatch.filter(filenames, '*.'+type):
+                print("Adding file :" + filename)
+                matches.append(os.path.join(root, filename))
+    else:
+        matches = glob.glob('**/*.' + type, recursive=True)
     return matches
 
 
