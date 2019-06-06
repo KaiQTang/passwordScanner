@@ -4,8 +4,8 @@ import sys
 import glob
 import argparse as ap
 
-types = ['log','txt']
-keywords = ['password','passwd']
+types = ['log','txt','xml']
+keywords = ['password','passwd','token','session','cookie']
 result = {}
 
 def main():
