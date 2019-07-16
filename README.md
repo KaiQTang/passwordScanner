@@ -1,12 +1,16 @@
 # passwordScanner
-User this python program to scan potential password/token leak in log files
+User this python program to scan potential password/token leak in log files\
 
-How to use:
-Copy scanner.py and patterns.txt to the directory you want to scan.
-Then run python scanner.py
+Installation:\
+python -m pip install -r requirements.txt \
 
-Things you can modify:
-Modify types and keywords in scanner.py if you want to scan other file types and different keywords.
-Add string to patterns.txt, for example,
-password=''
-password='********'
+Config file:\
+Modify config.json for different file types and keywords.\
+Patterns are filtered out using regular expression, so if you want to filter out \
+the exact word `password="**"`, Please use `password=\"[*][*]\"` because * is a special character in regular expression.\
+Also `"` must be added as `\"` otherwise it will break the json format.\
+
+Usages:\
+GUI version : run `python gui.py`.\
+Non-GUi : run `python scanner.py -c E:\dev\passwordscanner\config.json -p E:\dev\passwordscanner\log -o output.json`\
+where -c points to the config.json, -p points to scan location and -o is for output location.\
