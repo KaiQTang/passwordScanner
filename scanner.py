@@ -76,10 +76,7 @@ def main():
             print(file + ": " +str(len(findings)))
             for finding in findings:
                 count = count + 1
-                if len(finding)>100:
-                    print(finding[0:100])
-                else:
-                    print(finding)
+                print(finding)
     print("------------Total number of findings: "+str(count)+"------------------")
     print("------------Hit on known patterns: " + str(filtered) + "------------------")
     if args.o is not None:
@@ -109,13 +106,23 @@ def addFiles(types):
 
 
 def openAndScan(file, patterns, keywords):
-    with open(file) as fp:
-        line = fp.readline()
-        count = 1
-        while line:
-            findAndSendToResult(line, count, patterns, file, keywords)
+    try:
+        with open(file,errors='ignore') as fp:
             line = fp.readline()
-            count += 1
+            count = 1
+            while line:
+                findAndSendToResult(line, count, patterns, file, keywords)
+                line = fp.readline()
+                count += 1
+    except Exception as e:
+        print("ADDING UTF-8")
+        with open(file,encoding="utf8",errors='ignore') as fp:
+            line = fp.readline()
+            count = 1
+            while line:
+                findAndSendToResult(line, count, patterns, file, keywords)
+                line = fp.readline()
+                count += 1
 
 def findAndSendToResult(line, count, patterns, file, keywords):
     global filtered
