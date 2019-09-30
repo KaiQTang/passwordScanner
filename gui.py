@@ -14,6 +14,11 @@ import os
 import subprocess
 import json
 from scanner import addFiles
+from kivy.base import EventLoop
+from kivy.config import Config
+Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.modalview import ModalView
 
 class PasswordScannerApp(App):
     def build(self):
@@ -137,12 +142,16 @@ class PasswordScannerApp(App):
         if (os.path.exists(file_path)):
             self.configFilePath = file_path
             self.configFilePathInput.text = file_path
-            (self.typesConfig, self.keywordsConfig, self.patternsConfig, self.raw) = loadJson(file_path)
-            self.patterns.text = self.convertTextTo(self.patternsConfig, 'text')
-            self.types.text = self.convertTextTo(self.typesConfig, 'text')
-            self.keywords.text = self.convertTextTo(self.keywordsConfig, 'text')
+            try:
+                (self.typesConfig, self.keywordsConfig, self.patternsConfig, self.raw) = loadJson(file_path)
+                self.patterns.text = self.convertTextTo(self.patternsConfig, 'text')
+                self.types.text = self.convertTextTo(self.typesConfig, 'text')
+                self.keywords.text = self.convertTextTo(self.keywordsConfig, 'text')
+            except Exception as e:
+                Alert(text="Failed to load config file, not in json format.\n"
+                           "Please update patterns,keywords,file types in Configs tab.")
         else:
-            Alert(text="Failed to load config file.")
+            Alert(text="Failed to load config file, file does not exist.")
 
 
 class Alert(Popup):
@@ -166,6 +175,19 @@ class Alert(Popup):
 
 
 class outputInput(TextInput):
+    def on_touch_down(self, touch):
+        super(outputInput, self).on_touch_down(touch)
+        if touch.button == 'right':
+            #self.popup = PopMenu(touch)
+            #self.popup.open()
+            print("right mouse clicked")
+            t= self.selection_text
+            print(t)
+            begin = self._selection_from
+            end = self._selection_to
+            print(begin,end)
+            #self._show_cut_copy_paste(pos, EventLoop.window, mode='paste')
+
     def on_double_tap(self):
         super(outputInput, self).on_double_tap()
         try:
@@ -190,6 +212,20 @@ class outputInput(TextInput):
         except Exception as e:
             traceback.print_exc()
             Alert(text=str(e))
+
+class PopMenu(object):
+    def __init__(self, touch):
+        myContent = BoxLayout(orientation='vertical')
+        button = Button(text='copy')
+        myContent.add_widget(button)
+        button = Button(text='send to known patterns')
+        myContent.add_widget(button)
+
+        self.popup = ModalView(size_hint=(None, None), height=myContent.height, pos_hint={'x' : touch.spos[0], 'top' : touch.spos[1]},auto_dismiss=True)
+        self.popup.add_widget(myContent)
+    def open(self, *args):
+        self.popup.open()
+
 
 if __name__ == '__main__':
     PasswordScannerApp().run()
